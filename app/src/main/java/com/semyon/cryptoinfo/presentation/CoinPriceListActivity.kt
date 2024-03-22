@@ -7,6 +7,7 @@ import com.semyon.cryptoinfo.R
 import com.semyon.cryptoinfo.databinding.ActivityCoinPriceListBinding
 import com.semyon.cryptoinfo.domain.CoinInfo
 import com.semyon.cryptoinfo.presentation.adapters.CoinInfoAdapter
+import javax.inject.Inject
 
 class CoinPriceListActivity : AppCompatActivity() {
 
@@ -16,7 +17,15 @@ class CoinPriceListActivity : AppCompatActivity() {
         ActivityCoinPriceListBinding.inflate(layoutInflater)
     }
 
+    @Inject
+    lateinit var viewmodelFactory: ViewModelFactory
+
+    private val component by lazy {
+        (application as CoinApp).component
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         val adapter = CoinInfoAdapter(this)
@@ -29,7 +38,7 @@ class CoinPriceListActivity : AppCompatActivity() {
         }
         binding.rvCoinPriceList.adapter = adapter
         binding.rvCoinPriceList.itemAnimator = null
-        viewModel = ViewModelProvider(this)[CoinViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewmodelFactory)[CoinViewModel::class.java]
         viewModel.coinInfoList.observe(this) {
             adapter.submitList(it)
         }
